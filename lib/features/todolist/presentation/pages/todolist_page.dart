@@ -57,7 +57,7 @@ class _TodolistWidgetState extends State<TodolistWidget> {
                             },
                             child: Text('Add Task'),
                             style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white, backgroundColor: Colors.greenAccent.shade700,
+                              foregroundColor: Colors.white, backgroundColor: Colors.green.shade900,
                               shape: RoundedRectangleBorder(
                                 borderRadius: AppcontanstSetting().boderRadius
                               )
@@ -81,51 +81,61 @@ class _TodolistWidgetState extends State<TodolistWidget> {
                           itemCount: todoController.todos.length,
                           itemBuilder: (context, index){
                             Todo todo = todoController.todos[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),                    
-                          child: 
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,  
-                            children: [
-                              Checkbox(
-                                value: todo.isCompleted, 
-                                onChanged: (bool? value) {
-                                  todoController.editTodos(todo.toggleCompletion());
-                                },
-                              ),
-                              Container(
-                                width: 2.0,  
-                                color: Colors.grey,  
-                                height: 24.0,  
-                              ),
-                              SizedBox(width: 10.0,),                  
-                              Expanded(
-                                child: Text(
-                                  todo.title ?? '',
-                                  maxLines: 2,  
-                                  overflow: TextOverflow.ellipsis,  
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                ),
-                              ),                
+                        return Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),                    
+                              child: 
                               Row(
-                                mainAxisSize: MainAxisSize.min,  
+                                crossAxisAlignment: CrossAxisAlignment.center,  
                                 children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      _showEditDialog(context, todoController, todo);
+                                  Checkbox(
+                                    value: todo.isCompleted, 
+                                    onChanged: (bool? value) {
+                                      todoController.editTodos(todo.toggleCompletion());
                                     },
-                                    icon: Icon(Icons.edit, color: Colors.black,),
                                   ),
-                                  IconButton(
-                                    onPressed: () {
-                                      todoController.deleteTodos(todo);
-                                    },
-                                    icon: Icon(Icons.delete, color: Colors.red),
+                                  Container(
+                                    width: 2.0,  
+                                    color: Colors.grey,  
+                                    height: 24.0,  
+                                  ),
+                                  SizedBox(width: 10.0,),                  
+                                  Expanded(
+                                    child: Text(
+                                      todo.title ?? '',
+                                      maxLines: 2,  
+                                      overflow: TextOverflow.ellipsis,  
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),                
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,  
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          _showEditDialog(context, todoController, todo);
+                                        },
+                                        icon: Icon(Icons.edit, color: Colors.black,),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          todoController.deleteTodos(todo);
+                                        },
+                                        icon: Icon(Icons.delete, color: Colors.red),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
+                            ),
+                            if (index < todoController.todos.length - 1)
+                              Divider(
+                                color: Colors.white, 
+                                thickness: 3.0, 
+                                height: 1.0, 
+                              ),
+                          ],
                         );
                           }
                         ),
@@ -146,6 +156,7 @@ class _TodolistWidgetState extends State<TodolistWidget> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+        backgroundColor: Colors.white,
         title: Text('Edit todo'),
         content: TextField(
           controller: _controller,
@@ -178,51 +189,58 @@ class _TodolistWidgetState extends State<TodolistWidget> {
 
   void _showAddTodoDialog(BuildContext context, TodoController todoController) {
   final TextEditingController textController = TextEditingController();
+  bool showError = false;
+
   showDialog(
     context: context,
     builder: (context) {
-      return AlertDialog(
-        title: Text('Add new todo'),
-        content: TextField(
-          controller: textController,
-          decoration: InputDecoration(
-            hintText: 'Enter the todo title',            
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              if (textController.text.isNotEmpty) {
-                Todo newTodo = Todo(
-                  id: DateTime.now().millisecondsSinceEpoch,
-                  title: textController.text,
-                );
-                todoController.addTodos(newTodo).then((_) {
-                  Navigator.pop(context); 
-                }).catchError((e) {
-                  print('Error: $e');
-                });
-              }else{
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Please enter a title for the todo')),
-                );
-              }
-            },
-            child: Text('Ok', style: TextStyle(color: Colors.blue)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); 
-            },
-            child: Text('Cancel', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-        shape: RoundedRectangleBorder(
-          borderRadius: AppcontanstSetting().boderRadius,
-        ),
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Text('Add new todo'),
+            content: TextField(
+              controller: textController,
+              decoration: InputDecoration(
+                hintText: 'Enter the todo title',
+                errorText: showError ? 'Vui lòng nhập tiêu đề' : null,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  if (textController.text.isNotEmpty) {
+                    Todo newTodo = Todo(
+                      id: DateTime.now().millisecondsSinceEpoch,
+                      title: textController.text,
+                    );
+                    todoController.addTodos(newTodo).then((_) {
+                      Navigator.pop(context);
+                    }).catchError((e) {
+                      print('Error: $e');
+                    });
+                  } else {
+                    setState(() {
+                      showError = true;
+                    });
+                  }
+                },
+                child: Text('Ok', style: TextStyle(color: Colors.blue)),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Cancel', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+            shape: RoundedRectangleBorder(
+              borderRadius: AppcontanstSetting().boderRadius,
+            ),
+          );
+        },
       );
     },
   );
-
 }
 }
