@@ -3,12 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todoapp/config/contanst/appcontanst.setting.dart';
 import 'package:todoapp/features/todolist/domain/entities/todo.dart';
-import 'package:todoapp/features/todolist/presentation/pages/todo_controller.dart';
+import 'package:todoapp/features/todolist/presentation/controller/todo_controller.dart';
 import 'package:todoapp/features/todolist/presentation/widget/injection_container.dart';
 
-class TodolistWidget extends StatelessWidget {
+class TodolistWidget extends StatefulWidget {
   const TodolistWidget({super.key});
 
+  @override
+  State<TodolistWidget> createState() => _TodolistWidgetState();
+}
+
+class _TodolistWidgetState extends State<TodolistWidget> {
   @override
   Widget build(BuildContext context) {
     final TodoController todoController = getIt<TodoController>();
@@ -66,7 +71,7 @@ class TodolistWidget extends StatelessWidget {
                         color: Colors.grey.shade50,
                         borderRadius: AppcontanstSetting().boderRadius,
                         boxShadow: [
-                          BoxShadow(color: Colors.black26, blurRadius: 8.0),
+                          BoxShadow(color: Colors.black26, blurRadius: 5.0),
                         ],
                       ),                                          
                       child: Padding(
@@ -77,10 +82,10 @@ class TodolistWidget extends StatelessWidget {
                           itemBuilder: (context, index){
                             Todo todo = todoController.todos[index];
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),                    
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),                    
                           child: 
                           Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,  
+                            crossAxisAlignment: CrossAxisAlignment.center,  
                             children: [
                               Checkbox(
                                 value: todo.isCompleted, 
@@ -88,7 +93,12 @@ class TodolistWidget extends StatelessWidget {
                                   todoController.editTodos(todo.toggleCompletion());
                                 },
                               ),
-                              SizedBox(width: 5.0,),                  
+                              Container(
+                                width: 2.0,  
+                                color: Colors.grey,  
+                                height: 24.0,  
+                              ),
+                              SizedBox(width: 10.0,),                  
                               Expanded(
                                 child: Text(
                                   todo.title ?? '',
@@ -130,7 +140,6 @@ class TodolistWidget extends StatelessWidget {
     );
   }
 
-
   void _showEditDialog(BuildContext context, TodoController todoController, Todo todo) {
   final TextEditingController _controller = TextEditingController(text: todo.title);
   showDialog(
@@ -150,13 +159,13 @@ class TodolistWidget extends StatelessWidget {
               }
               Navigator.of(context).pop();
             },
-            child: Text('Ok'),
+            child: Text('Ok', style: TextStyle(color: Colors.blue)),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('Cancel'),
+            child: Text('Cancel', style: TextStyle(color: Colors.red)),
           ),         
         ],
          shape: RoundedRectangleBorder(
@@ -193,15 +202,19 @@ class TodolistWidget extends StatelessWidget {
                 }).catchError((e) {
                   print('Error: $e');
                 });
+              }else{
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Please enter a title for the todo')),
+                );
               }
             },
-            child: Text('Ok'),
+            child: Text('Ok', style: TextStyle(color: Colors.blue)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context); 
             },
-            child: Text('Cancel'),
+            child: Text('Cancel', style: TextStyle(color: Colors.red)),
           ),
         ],
         shape: RoundedRectangleBorder(

@@ -6,7 +6,6 @@ class EditTodo {
   final TodoRepository todoRepository;
 
   EditTodo (this.todoRepository);
-
   Future <void> excute (Todo todo){
     return todoRepository.editTodo(todo);
   }

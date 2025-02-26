@@ -1,6 +1,8 @@
 # todoapp
 
-A new Flutter project.
+Xây dựng ứng dụng todolist trên window desktop.
+
+
 
 ## Getting Started
 

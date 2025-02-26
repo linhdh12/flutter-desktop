@@ -4,7 +4,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:todoapp/features/todolist/data/data_sources/local/todolist_db.dart';
 import 'package:todoapp/features/todolist/data/repository/todo_repository_impl.dart';
 import 'package:todoapp/features/todolist/domain/repository/todo_repository.dart';
-import 'package:todoapp/features/todolist/presentation/pages/todo_controller.dart';
+import 'package:todoapp/features/todolist/presentation/controller/todo_controller.dart';
 
 final getIt = GetIt.instance;
 
