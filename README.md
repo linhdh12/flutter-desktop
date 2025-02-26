@@ -2,6 +2,22 @@
 
 Xây dựng ứng dụng todolist trên window desktop.
 
+### Yêu cầu môi trường
+- Flutter: 3.19.2
+- Dart: 3.3.0
+- Xcode: ...
+- VS Code 1.89.0
+- Java SDK 19
+
+#### Yêu cầu về thiết bị
+- Android SDK 21+
+- IOS 12+
+- Window 10
+
+### Các bước build ứng dụng
+- Kích hoạt nền tảng Windows : flutter config --enable-windows-desktop
+- Build ứng dụng flutter trên window: flutter build windows
+- Chạy ứng dụng trên window: flutter run -d windows
 
 
 ## Getting Started
