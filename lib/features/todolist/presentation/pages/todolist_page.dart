@@ -14,6 +14,7 @@ class TodolistWidget extends StatefulWidget {
 }
 
 class _TodolistWidgetState extends State<TodolistWidget> {
+  Set<Todo> selectedTodos = {};
   @override
   Widget build(BuildContext context) {
     final TodoController todoController = getIt<TodoController>();
@@ -30,118 +31,187 @@ class _TodolistWidgetState extends State<TodolistWidget> {
       ),     
       body: Obx(() {
         return todoController.todos.isEmpty
-          ? Center(child: Text('Not found'),)
+          ? Center(child: Container(
+            height: 1000,
+                width: 800,
+            child: Column(
+              children: [
+                Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Tasks',
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                _showAddTodoDialog(context, todoController);
+                              },
+                              child: Text('Add Task'),
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white, backgroundColor: Colors.green.shade900,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: AppcontanstSetting().boderRadius
+                                )
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                SizedBox(height: 20.0,),
+                Text('Not found'),
+              ],
+            ),
+          ),)
           : Center(
             child: Padding(
               padding: const EdgeInsets.only(top: 50.0),
-              child: Container(
-                height: 1000,
-                width: 800,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Tasks',
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              _showAddTodoDialog(context, todoController);
-                            },
-                            child: Text('Add Task'),
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white, backgroundColor: Colors.green.shade900,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: AppcontanstSetting().boderRadius
-                              )
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(                                           
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
-                        borderRadius: AppcontanstSetting().boderRadius,
-                        boxShadow: [
-                          BoxShadow(color: Colors.black26, blurRadius: 5.0),
-                        ],
-                      ),                                          
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: todoController.todos.length,
-                          itemBuilder: (context, index){
-                            Todo todo = todoController.todos[index];
-                        return Column(
+              child: SingleChildScrollView(
+                child: Container(
+                  height: 1000,
+                  width: 800,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),                    
-                              child: 
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,  
-                                children: [
-                                  Checkbox(
-                                    value: todo.isCompleted, 
-                                    onChanged: (bool? value) {
-                                      todoController.editTodos(todo.toggleCompletion());
-                                    },
-                                  ),
-                                  Container(
-                                    width: 2.0,  
-                                    color: Colors.grey,  
-                                    height: 24.0,  
-                                  ),
-                                  SizedBox(width: 10.0,),                  
-                                  Expanded(
-                                    child: Text(
-                                      todo.title ?? '',
-                                      maxLines: 2,  
-                                      overflow: TextOverflow.ellipsis,  
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                  ),                
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,  
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {
-                                          _showEditDialog(context, todoController, todo);
-                                        },
-                                        icon: Icon(Icons.edit, color: Colors.black,),
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          todoController.deleteTodos(todo);
-                                        },
-                                        icon: Icon(Icons.delete, color: Colors.red),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                            Text(
+                              'Tasks',
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            if (index < todoController.todos.length - 1)
-                              Divider(
-                                color: Colors.white, 
-                                thickness: 3.0, 
-                                height: 1.0, 
-                              ),
+                            Row(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _showAddTodoDialog(context, todoController);
+                                  },
+                                  child: Text('Add Task'),
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white, backgroundColor: Colors.green.shade900,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: AppcontanstSetting().boderRadius
+                                    )
+                                  ),
+                                ),
+                                SizedBox(width: 6.0,),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (selectedTodos.isNotEmpty) {
+                                      setState(() {
+                                        for (var todo in selectedTodos) {
+                                          todoController.deleteTodos(todo);
+                                        }
+                                        selectedTodos.clear();
+                                      });
+                                    }
+                                  },
+                                  child: Text("Delete"),
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white, backgroundColor: Colors.red.shade900,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: AppcontanstSetting().boderRadius,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
-                        );
-                          }
                         ),
                       ),
-                    ),
-                  ],
+                      Container(                                           
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: AppcontanstSetting().boderRadius,
+                          boxShadow: [
+                            BoxShadow(color: Colors.black26, blurRadius: 5.0),
+                          ],
+                        ),                                          
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: todoController.todos.length,
+                            itemBuilder: (context, index){
+                              Todo todo = todoController.todos[index];
+                          return Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),                    
+                                child: 
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,  
+                                  children: [
+                                    Checkbox(
+                                      value: todo.isCompleted, 
+                                      onChanged: (bool? value) {
+                                        todoController.editTodos(todo.toggleCompletion());
+                                        setState(() {
+                                          if (value == true) {
+                                            selectedTodos.add(todo);
+                                          } else {
+                                            selectedTodos.remove(todo);
+                                          }
+                                        });
+                                      },
+                                    ),
+                                    Container(
+                                      width: 2.0,  
+                                      color: Colors.grey,  
+                                      height: 24.0,  
+                                    ),
+                                    SizedBox(width: 10.0,),                  
+                                    Expanded(
+                                      child: Text(
+                                        todo.title ?? '',
+                                        maxLines: 2,  
+                                        overflow: TextOverflow.ellipsis,  
+                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),                
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,  
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            _showEditDialog(context, todoController, todo);
+                                          },
+                                          icon: Icon(Icons.edit, color: Colors.black,),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            todoController.deleteTodos(todo);
+                                          },
+                                          icon: Icon(Icons.delete, color: Colors.red),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (index < todoController.todos.length - 1)
+                                Divider(
+                                  color: Colors.white, 
+                                  thickness: 3.0, 
+                                  height: 1.0, 
+                                ),
+                            ],
+                          );
+                            }
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
