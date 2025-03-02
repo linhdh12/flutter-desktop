@@ -1,6 +1,9 @@
 
+import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:todoapp/features/todolist/data/data_sources/local/todolist_db.dart';
 import 'package:todoapp/features/todolist/data/repository/todo_repository_impl.dart';
 import 'package:todoapp/features/todolist/domain/repository/todo_repository.dart';
@@ -10,8 +13,12 @@ final getIt = GetIt.instance;
 
 Future<void> setup() async {
   
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
+  sqfliteFfiInit(); 
+  if (kIsWeb) {
+      databaseFactory = databaseFactoryFfiWeb; 
+    } else {
+      databaseFactory = databaseFactoryFfi;
+    }
 
   getIt.registerSingleton<TodoDataSource>(TodoDataSource());
 
@@ -25,3 +32,5 @@ Future<void> setup() async {
 
   await getIt<TodoController>().fetchTodos();
 }
+
+

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:todoapp/config/contanst/appcontanst.setting.dart';
 import 'package:todoapp/features/todolist/domain/entities/todo.dart';
 import 'package:todoapp/features/todolist/presentation/controller/todo_controller.dart';
-import 'package:todoapp/features/todolist/presentation/widget/injection_container.dart';
+import 'package:todoapp/cores/util/injection_container.dart';
 
 class TodolistWidget extends StatefulWidget {
   const TodolistWidget({super.key});
@@ -18,6 +18,7 @@ class _TodolistWidgetState extends State<TodolistWidget> {
   @override
   Widget build(BuildContext context) {
     final TodoController todoController = getIt<TodoController>();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.cyan.shade900,
@@ -63,7 +64,7 @@ class _TodolistWidgetState extends State<TodolistWidget> {
                           ],
                         ),
                       ),
-                SizedBox(height: 20.0,),
+                
                 Text('Not found'),
               ],
             ),
@@ -71,64 +72,64 @@ class _TodolistWidgetState extends State<TodolistWidget> {
           : Center(
             child: Padding(
               padding: const EdgeInsets.only(top: 50.0),
-              child: SingleChildScrollView(
-                child: Container(
-                  height: 1000,
-                  width: 800,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Tasks',
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
+              child: Container(
+                height: 1000,
+                width: 800,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Tasks',
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  _showAddTodoDialog(context, todoController);
+                                },
+                                child: Text('Add Task'),
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white, backgroundColor: Colors.green.shade900,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: AppcontanstSetting().boderRadius
+                                  )
+                                ),
                               ),
-                            ),
-                            Row(
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    _showAddTodoDialog(context, todoController);
-                                  },
-                                  child: Text('Add Task'),
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white, backgroundColor: Colors.green.shade900,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: AppcontanstSetting().boderRadius
-                                    )
+                              SizedBox(width: 6.0,),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (selectedTodos.isNotEmpty) {
+                                    setState(() {
+                                      for (var todo in selectedTodos) {
+                                        todoController.deleteTodos(todo);
+                                      }
+                                      selectedTodos.clear();
+                                    });
+                                  }
+                                },
+                                child: Text("Delete"),
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white, backgroundColor: Colors.red.shade900,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: AppcontanstSetting().boderRadius,
                                   ),
                                 ),
-                                SizedBox(width: 6.0,),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    if (selectedTodos.isNotEmpty) {
-                                      setState(() {
-                                        for (var todo in selectedTodos) {
-                                          todoController.deleteTodos(todo);
-                                        }
-                                        selectedTodos.clear();
-                                      });
-                                    }
-                                  },
-                                  child: Text("Delete"),
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white, backgroundColor: Colors.red.shade900,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: AppcontanstSetting().boderRadius,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      Container(                                           
+                    ),
+                    Expanded(
+                      child: Container(                                                                    
                         decoration: BoxDecoration(
                           color: Colors.grey.shade50,
                           borderRadius: AppcontanstSetting().boderRadius,
@@ -210,8 +211,8 @@ class _TodolistWidgetState extends State<TodolistWidget> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

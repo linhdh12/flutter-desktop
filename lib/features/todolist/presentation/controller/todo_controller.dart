@@ -5,7 +5,10 @@ import 'package:todoapp/features/todolist/domain/repository/todo_repository.dart
 class TodoController extends GetxController {
   final TodoRepository todoRepository;
 
-  TodoController({required this.todoRepository});
+  TodoController(
+    {
+      required this.todoRepository,     
+    });
  
   var todos = <Todo>[].obs;
 

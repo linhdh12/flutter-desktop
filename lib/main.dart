@@ -1,11 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:todoapp/features/todolist/presentation/pages/todolist_page.dart';
-import 'package:todoapp/features/todolist/presentation/widget/injection_container.dart';
+import 'package:todoapp/cores/util/injection_container.dart';
 
 void main() async{
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
+  if (kIsWeb) {
+      databaseFactory = databaseFactoryFfiWeb; 
+    } else {
+      databaseFactory = databaseFactoryFfi;
+    }
   await setup();
   runApp(const MyApp());
 }
